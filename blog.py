@@ -37,7 +37,13 @@ class Entry(db.Model):
     markdown = db.TextProperty(required=True)
     published = db.DateTimeProperty(auto_now_add=True)
     updated = db.DateTimeProperty(auto_now=True)
+    tags = db.StringListProperty(required=True)
+    visible = db.BooleanProperty(default = False)
 
+class Tag(db.Model):
+    """Tag counts."""
+    tag = db.StringProperty(multiline=False)
+    count = db.IntegerProperty(default=0)
 
 def administrator(method):
     """Decorate with this method to restrict to site admins."""
@@ -76,12 +82,15 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
-        entries = db.Query(Entry).order('-published').fetch(limit=3)
+        if self.current_user and self.current_user.administrator:
+            entries = db.Query(Entry).order('-published').fetch(limit=3)
+        else:
+            entries = db.Query(Entry).filter('visible = ', True).order('-published').fetch(limit=3)
         if not entries:
             if not self.current_user or self.current_user.administrator:
                 self.redirect("/compose")
                 return
-        self.render("home.html", entries=entries)
+        self.render("home.html", entries=entries, tags=db.Query(Tag).order('tag'))
 
 
 class EntryHandler(BaseHandler):
@@ -89,18 +98,32 @@ class EntryHandler(BaseHandler):
     def get(self, slug):
         entry = db.Query(Entry).filter("slug =", slug).get()
         if not entry: raise tornado.web.HTTPError(404)
-        self.render("entry.html", entry=entry)
+        self.render("entry.html", entry=entry, tags=db.Query(Tag).order('tag'))
+
+
+class TagHandler(BaseHandler):
+    @tornado.web.removeslash
+    def get(self,tag):
+        if self.current_user and self.current_user.administrator:
+		    entries = db.GqlQuery("select * from Entry where tags = :t order by published DESC", t=tag).fetch(10) 
+        else:
+		    entries = db.GqlQuery("select * from Entry where tags = :t and visible = True order by published DESC", t=tag).fetch(10) 
+        """entries = db.Query(Entry).filter("tags IN", tag).order('-published')"""
+        self.render("tag.html", entries=entries, tag=tag, tags=db.Query(Tag).order('tag'))
 
 
 class ArchiveHandler(BaseHandler):
     def get(self):
-        entries = db.Query(Entry).order('-published')
-        self.render("archive.html", entries=entries)
+        if self.current_user and self.current_user.administrator:
+            entries = db.Query(Entry).order('-published')
+        else:
+            entries = db.Query(Entry).filter('visible = ', True).order('-published')
+        self.render("archive.html", entries=entries, tags=db.Query(Tag).order('tag'))
 
 
 class AboutHandler(BaseHandler):
     def get(self):
-        self.render("about.html")
+        self.render("about.html", tags=db.Query(Tag).order('tag'))
 
 
 class FeedHandler(BaseHandler):
@@ -122,15 +145,54 @@ class ComposeHandler(BaseHandler):
         key = self.get_argument("key", None)
         if key:
             entry = Entry.get(key)
+            old_entry = Entry.get(key)
             entry.title = self.get_argument("title")
             entry.body = self.get_argument("markdown")
             entry.markdown = markdown.markdown(self.get_argument("markdown"))
+            entry.visible = self.get_argument("visible") == "true"
+            entry.tags = self.get_argument("tags").split(",")
+            entry.tags = filter(None, entry.tags)
+            for i in range(0,len(entry.tags)):
+                entry.tags[i] = entry.tags[i].strip().lower()
+            for text in set(entry.tags) - set(old_entry.tags):
+                tag = db.Query(Tag).filter("tag =", str(text)).get()
+                if not tag:
+                    tag = Tag(
+                        tag=text.lower(),
+                        count=1
+                    )
+                else:
+                     tag.count+=1
+                tag.put()                
+            for text in set(old_entry.tags) - set(entry.tags):
+                tag = db.Query(Tag).filter("tag =", str(text)).get()
+                if tag:
+                    tag.count-=1
+                    if tag.count == 0:
+                        tag.delete()
+                    else:
+                        tag.put()
         else:
             title = self.get_argument("title")
             slug = unicodedata.normalize("NFKD", title).encode(
                 "ascii", "ignore")
             slug = re.sub(r"[^\w]+", " ", slug)
             slug = "-".join(slug.lower().strip().split())
+            visible = self.get_argument("visible") == "true"
+            tags = self.get_argument("tags").split(",")
+            tags = filter(None, tags)
+            for i in range(0,len(tags)):
+                tags[i] = tags[i].strip().lower()
+                text = tags[i].strip()
+                tag = db.Query(Tag).filter("tag =", text).get()
+                if not tag:
+                    tag = Tag(
+                        tag=text.lower(),
+                        count=1
+                    )
+                else:
+                     tag.count+=1
+                tag.put()
             if not slug: slug = "entry"
             while True:
                 existing = db.Query(Entry).filter("slug =", slug).get()
@@ -143,6 +205,7 @@ class ComposeHandler(BaseHandler):
                 slug=slug,
                 body=self.get_argument("markdown"),
                 markdown=markdown.markdown(self.get_argument("markdown")),
+                tags=tags,
             )
         entry.put()
         self.redirect("/entry/" + entry.slug)
@@ -164,12 +227,12 @@ class EntryModule(tornado.web.UIModule):
 
     def javascript_files(self):
         if getattr(self, "show_comments", False):
-            return ["http://disqus.com/forums/brettaylor/embed.js"]
+            return ["http://disqus.com/forums/viclogcom/embed.js"]
         return None
 
 
 settings = {
-    "blog_title": u"Bret Taylor's blog",
+    "blog_title": u"Victor Thompson's blog",
     "template_path": os.path.join(os.path.dirname(__file__), "templates"),
     "ui_modules": {"Entry": EntryModule},
     "xsrf_cookies": True,
@@ -182,7 +245,9 @@ application = tornado.wsgi.WSGIApplication([
     (r"/entry/([^/]+)/?", EntryHandler),
     (r"/compose", ComposeHandler),
     (r"/about", AboutHandler),
+    (r"/resume",tornado.web.RedirectHandler, {"url": "http://resume.linkedinlabs.com/pa69s275b"}),
     (r"/index", tornado.web.RedirectHandler, {"url": "/archive"}),
+    (r"/tag/([^/]+)/?", TagHandler),
 ], **settings)
 
 

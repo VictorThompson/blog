@@ -2,21 +2,43 @@
 
 {% block body %}
   {% block sidebar %}
-    <div id="sidebar">
-      <div class="section">
-	<div class="headline"><img src="/static/images/find-me-on-the-web.png" style="width:139px" alt="Find me on the web"/></div>
-	<table class="icons">
-	  <tr>
-	    <td><a href="http://www.facebook.com/btaylor" rel="me"><img src="/static/images/facebook-big.png"/></a></td>
-	    <td class="last"><a href="mailto:btaylor@gmail.com" rel="me"><img src="/static/images/gmail-big.png"/></a></td>
-	  </tr>
-	  <tr>
-	    <td><a href="http://feeds.feedburner.com/brettaylor" rel="me"><img src="/static/images/feed-big.png"/></a></td>
-	    <td class="last"><a href="http://friendfeed.com/bret" rel="me"><img src="/static/images/friendfeed-big.png"/></a></td>
-	  </tr>
-	</table>
-      </div>
-    </div>
+<!-- sidebar -->
+<div id="sidebar">
+	<div class="about-me">
+			<div class="img-border">
+			<a href="/about"><img style="float:left;margin: 5px 10px 5px 0px;" src="/static/images/me.jpg" style="width: 72px; height: 122px;" /></a><p style="vertical-align:baseline;display:block">Hi, I'm Victor Thompson: Software Engineer, running enthusiast, travel aficionado, and <strike>photographer</strike> camera owner.</p>
+			</div>
+	</div>
+	<div class="sidemenu">
+		<h3>
+			Tag Cloud</h3>
+		<ul>
+			<li>
+				{% for t in tags %}
+	            <a href="/tag/{{t.tag}}"  class="tag{{t.count}}">{{t.tag}}</a>
+	            {% end %}
+			</li>
+		</ul>
+	</div>
+	<div class="sidemenu">
+		<h3>
+			More</h3>
+		<ul>
+			<li>
+				<a href="http://www.linkedin.com/pub/victor-thompson/5/37a/319">LinkedIn</a></li>
+			<li>
+				<a href="http://twitter.com/VictorThompson">Twitter</a></li>
+			<li>
+				<a href="http://facebook.com/victor.ray">Facebook</a></li>
+                        <li>
+				<a href="http://www.flickr.com/photos/44503722@N00/">Flickr</a></li>
+		</ul>
+	</div>
+<!-- /sidebar --></div>
+
+
+
+
   {% end %}
   <div id="entries">{% block content %}{% end %}</div>
 {% end %}

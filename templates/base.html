@@ -4,19 +4,60 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
     <title>{% block title %}{{ escape(handler.settings["blog_title"]) }}{% end %}</title>
     <link rel="stylesheet" href="/static/blog.css" type="text/css"/>
-    <link rel="alternate" href="http://feeds.feedburner.com/brettaylor" type="application/atom+xml" title="{{ escape(handler.settings["blog_title"]) }}"/>
+	<!--
+		1 ) Reference to the files containing the JavaScript and CSS.
+		These files must be located on your server.
+	-->
+
+	<script type="text/javascript" src="/static/highslide/highslide/highslide-with-gallery.js"></script>
+	<link rel="stylesheet" type="text/css" href="/static/highslide/highslide/highslide.css" />
+
+	<!--
+		2) Optionally override the settings defined at the top
+		of the highslide.js file. The parameter hs.graphicsDir is important!
+	-->
+
+	<script type="text/javascript">
+	hs.graphicsDir = '/static/highslide/highslide/graphics/';
+	hs.align = 'center';
+	hs.transitions = ['expand', 'crossfade'];
+	hs.outlineType = 'rounded-white';
+	hs.fadeInOut = true;
+	//hs.dimmingOpacity = 0.75;
+
+	// Add the controlbar
+	hs.addSlideshow({
+		//slideshowGroup: 'group1',
+		interval: 5000,
+		repeat: false,
+		useControls: true,
+		fixedControls: 'fit',
+		overlayOptions: {
+			opacity: 0.75,
+			position: 'bottom center',
+			hideOnMouseOut: true
+		}
+	});
+	</script>
+
+
     {% block head %}{% end %}
   </head>
   <body>
     <div id="body">
       <div id="header">
-	<div class="menu"><span><a href="http://feeds.feedburner.com/brettaylor"><img src="/static/images/rss.png" style="width:30px" alt="Feed"/></a></span><span><a href="/archive"><img src="/static/images/archive.png" style="width:57px" alt="Archive"/></a></span><span><a href="/about"><img src="/static/images/about-me.png" style="width:69px" alt="About me"/></a></span></div>
-	<div class="title"><a href="/"><img src="/static/images/bret-taylor.png" style="width:116px" alt="Bret Taylor"/></a></div>
+	<div class="menu">
+		<span><a href="/archive">ARCHIVE</a></span>
+		<span><a href="/tag/photography">PHOTOGRAPHY</a></span>
+		<span><a href="/about">ABOUT</a></span>
+		<span><a href="/resume" target="new">RESUME</a></span></div>
+	<div class="title"><a href="/">VICTOR THOMPSON</a></div>
       </div>
       <div id="content">{% block body %}{% end %}</div>
       <div id="footer">
-	&copy;{{ datetime.datetime.utcnow().year }} Bret Taylor - <a href="/about">About me</a> - <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons license</a>
-	{% if current_user %} - <a href="{{ users.create_logout_url(request.uri) }}">Sign out</a>{% end %}
+	&copy;{{ datetime.datetime.utcnow().year }} Victor Thompson - <a href="/about">About me</a> - <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons license</a>
+	{% if current_user %} - <a href="{{ users.create_logout_url(request.uri) }}">Sign out</a>{% if current_user.administrator %} - <a href="/compose">Add Entry</a>{% end %}{% end %}
+	{% if not current_user %} - <a href="/compose">Sign In</a>{% end %}
       </div>
     </div>
     {% block bottom %}{% end %}

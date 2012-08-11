@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "sidebar.html" %}
 
 {% block title %}{{ escape(handler.settings["blog_title"]) }} - Archive{% end %}
 
@@ -21,7 +21,7 @@
   </style>
 {% end %}
 
-{% block body %}
+{% block content %}
   <ul class="archive">
     {% for entry in entries %}
       <li>

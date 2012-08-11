@@ -82,12 +82,25 @@ a:hover {
   text-decoration: underline;
 }
 
+/* images */
+.img-border img {
+   background: #F3F4F5;
+   border: 1px solid #E2E4E7;
+	padding: 10px;
+}
+.img-border img.float-right {	margin: 5px 0px 10px 10px; }
+.img-border img.float-left { margin: 5px 10px 10px 0px; }
+
+
 #header {
-  background: black;
+  background:black;
+  background:-webkit-linear-gradient(top,#444 0%,#000 100%);
+  background:linear-gradient(top,#444 0%,#000 100%)
+  background: -moz-linear-gradient(center top , rgb(68, 68, 68) 0%, rgb(0, 0, 0) 100%) repeat scroll 0% 0% transparent;
   padding: 8px;
   padding-left: 15px;
   padding-right: 15px;
-  line-height: 0;
+  line-height: 1;
 }
 
 #header .menu {
@@ -96,6 +109,18 @@ a:hover {
 
 #header .menu span {
   margin-left: 18px;
+}
+#header .menu a {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 10pt;
+  color: white;
+  text-decoration: none;
+}
+#header .title a {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14pt;
+  color: white;
+  text-decoration: none;
 }
 
 #footer,
@@ -106,6 +131,7 @@ a:hover {
   max-width: 1024px;
 }
 
+/*
 #sidebar {
   float: right;
   line-height: 0;
@@ -128,9 +154,62 @@ a:hover {
 #sidebar .icons td.last {
   padding-right: 0;
 }
+*/
+#sidebar {
+	width: 250px;
+	float: right;
+   margin: 0;
+   padding: 15px 0;
+   font-size: .95em;
+}
+#sidebar h3 {
+	font: bold 1.7em "Helvetica Neue", Helvetica, Arial, sans-serif;
+   letter-spacing: .2px;
+	margin-left: 10px;
+   color: #000;
+}
+#sidebar h3, #sidebar p {
+	margin-left: 10px;
+}
+#sidebar img { padding: 8px; }
+
+/* sidemenu */
+.sidemenu {
+        padding: 15px 0 0 0;
+}
+.sidemenu ul {
+	text-align: left;
+	margin: 10px 15px 10px 8px;
+   padding: 0;
+	border-top: 1px solid #EFEFEF;
+}
+.sidemenu ul li {
+	list-style: none;
+	font-size: 12px;
+	margin: 0;
+	padding: 7px 5px;
+	border-bottom: 1px solid #EFEFEF;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+* html body .sidemenu ul li {	height: 1%; }
+.sidemenu ul li a:link,
+.sidemenu ul li a:visited {
+   color: #777;
+	padding-left: 0;
+	font-weight: bold;
+}
+.sidemenu ul li a span {
+	color: #777;
+	font-style: normal;
+	font-weight: normal;
+	text-transform: none;
+}
+.sidemenu ul li a:hover { color: #000; }
+.sidemenu ul ul { margin: 0 0 0 5px; padding: 0; }
+.sidemenu ul ul li { border: none; }
 
 #entries {
-  margin-right: 250px;
+  margin-right: 275px;
 }
 
 #content h1 {
@@ -182,3 +261,63 @@ a:hover {
 .entry #disqus_thread li {
   line-height: normal;
 }
+
+/* Start Tag Cloud CSS */
+.cloud {
+    text-decoration: none;
+    padding: 0 1px 0 1px;
+    line-height: 150%;
+    text-align: justify;
+    background: #FAFAFA none repeat scroll 0 0;
+}
+
+.cloud a {
+    text-decoration: none
+}
+
+a.tag1 {
+    font-size: 0.9em;
+    font-weight: 100;
+}
+
+a.tag2, a.tag3 {
+    font-size: 1.2em;
+}
+
+a.tag4, a.tag5, a.tag6 {
+    font-size: 1.3em;
+}
+
+a.tag7, a.tag8, a.tag9 {
+    font-size: 1.4em;
+}
+
+a.tag10, a.tag11, a.tag12 {
+    font-size: 1.5em;
+}
+
+a.tag13, a.tag14, a.tag15 {
+    font-size: 1.6em;
+}
+
+a.tag16, a.tag17, a.tag18 {
+    font-size: 1.7em;
+}
+
+a.tag19, a.tag20, a.tag21 {
+    font-size: 1.8em;
+}
+
+a.tag22, a.tag23, a.tag24 {
+    font-size: 1.9em;
+}
+
+a.tag25, a.tag26, a.tag27 {
+    font-size: 2.0em;
+}
+
+a.tag28, a.tag29, a.tag30 {
+    font-size: 2.2em;
+}
+
+/* End Tag Cloud CSS */
